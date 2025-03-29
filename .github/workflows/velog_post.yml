@@ -41,4 +41,10 @@ jobs:
           git commit -m "🤖 자동 생성된 글 업로드: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
           git push
 
-
+      - name: Upload to Velog via Puppeteer
+        env:
+          VELOG_EMAIL: ${{ secrets.VELOG_EMAIL }}
+          VELOG_PASSWORD: ${{ secrets.VELOG_PASSWORD }}
+        run: |
+          npm install puppeteer
+          node scripts/velog_upload.js
