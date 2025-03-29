@@ -45,7 +45,7 @@ const puppeteer = require('puppeteer');
   
   // 2. 본인 페이지 접속 → 로그인 검증
   await page.goto(`https://velog.io/@${email.split('@')[0]}`);
-  await page.waitForTimeout(2000);
+  await new Promise(resolve => setTimeout(resolve, 2000));
   const isLoggedIn = await page.$('a[href="/write"]');
   
   if (!isLoggedIn) {
