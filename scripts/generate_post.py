@@ -31,7 +31,7 @@ def generate_title(topic):
 def generate_content(topic):
     prompt = f"'{topic}'에 대한 블로그 글을 마크다운 형식으로 작성해줘. 소제목 포함, 5문단 이상."
     res = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
     return res.choices[0].message.content.strip()
