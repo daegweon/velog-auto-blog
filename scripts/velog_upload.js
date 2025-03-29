@@ -26,34 +26,40 @@ const puppeteer = require('puppeteer');
   });
   const page = await browser.newPage();
   console.log("[ℹ] Navigating to Velog homepage...");
-  // 1. 로그인 상태 확인
+  // 1. Velog 홈 → 로그인 확인 → 로그인 시도
   await page.goto('https://velog.io');
   const loginBtn = await page.$('a[href="/login"]');
+  
   if (loginBtn) {
+    console.log("[ℹ] Login button found, logging in...");
     await loginBtn.click();
     await page.waitForSelector('input[name="email"]');
     await page.type('input[name="email"]', email);
     await page.type('input[name="password"]', password);
     await page.click('button[type="submit"]');
     await page.waitForNavigation();
-    console.log("[✔] Logged in successfully");
+    console.log("[✔] Login process completed");
   } else {
-    console.log("[ℹ] Already logged in or login button not found");
+    console.log("[ℹ] Already logged in or login button not present");
   }
   
-  // 2. 로그인 상태 확인용 페이지 진입
-  await page.goto('https://velog.io/write');
-  console.log("[ℹ] Navigated to write page");
+  // 2. 본인 페이지 접속 → 로그인 검증
+  await page.goto(`https://velog.io/@${email.split('@')[0]}`);
+  await page.waitForTimeout(2000);
+  const isLoggedIn = await page.$('a[href="/write"]');
   
-  try {
-    await page.waitForSelector('.ToastEditor textarea', { timeout: 10000 });
-    console.log("[✔] Editor loaded successfully");
-  } catch (err) {
-    console.error("[❌] Editor failed to load. Possibly not logged in.");
-    await page.screenshot({ path: 'error-screenshot.png' });
+  if (!isLoggedIn) {
+    console.error("[❌] Login check failed — write button not found");
+    await page.screenshot({ path: 'login-failed.png' });
     process.exit(1);
   }
-  await page.waitForSelector('.ToastEditor textarea');
+  
+  console.log("[✔] Confirmed logged in. Proceeding to write page...");
+  
+  // 3. 글쓰기 페이지 이동
+  await page.goto('https://velog.io/write');
+  await page.waitForSelector('.ToastEditor textarea', { timeout: 10000 });
+  console.log("[✔] Editor loaded successfully");
   await page.click('.ToastEditor textarea');
   await page.keyboard.type(content, { delay: 5 });
 
