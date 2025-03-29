@@ -27,6 +27,7 @@ jobs:
       - name: Generate Velog Post
         env:
           CHATGPT_API_KEY: ${{ secrets.CHATGPT_API_KEY }}
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
           COUPANG_PARTNER_ID: ${{ secrets.COUPANG_PARTNER_ID }}
         run: python scripts/generate_post.py
 
