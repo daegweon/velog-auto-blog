@@ -97,19 +97,20 @@ def generate_image(topic):
     )
     return res.data[0].url
 
-def create_markdown_file(title, topic, content, image_url, tags):
-    ...
-    f.write(f"""---
-title: {title}
-description: A helpful blog post about {topic}
-tags: {tags}
-date: {today}
----
+def create_velog_markdown_file(title, topic, content, image_url):
+    today = datetime.today().strftime("%Y-%m-%d")
+    slug = re.sub(r'[^\w\s-]', '', title).strip().replace(' ', '_')
+    filename = f"markdown/{today}-{slug}-velog.md"
+    os.makedirs("markdown", exist_ok=True)
 
-![Thumbnail]({image_url})
+    seo_intro = f"**In this post, you'll learn about {topic} and why it matters in today's world.**\n\n"
+
+    with open(filename, "w", encoding="utf-8") as f:
+        f.write(f"""![Thumbnail]({image_url})
 
 {seo_intro}{content}
 """)
+    print(f"[✔] Velog-ready markdown saved: {filename}")
 
 if __name__ == "__main__":
     topic = get_trending_keyword()
