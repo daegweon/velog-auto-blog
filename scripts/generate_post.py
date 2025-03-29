@@ -23,7 +23,7 @@ def get_trending_keyword():
 def generate_title(topic):
     prompt = f"'{topic}'을 주제로 Velog 블로그 글 제목을 만들어줘. 50자 이내."
     res = openai.ChatCompletion.create(
-        model="gpt-4",
+        model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
     return res.choices[0].message.content.strip()
