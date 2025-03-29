@@ -26,9 +26,8 @@ const puppeteer = require('puppeteer');
   });
   const page = await browser.newPage();
   console.log("[ℹ] Navigating to Velog homepage...");
+  // 1. 로그인 상태 확인
   await page.goto('https://velog.io');
-
-  // 로그인
   const loginBtn = await page.$('a[href="/login"]');
   if (loginBtn) {
     await loginBtn.click();
@@ -37,12 +36,23 @@ const puppeteer = require('puppeteer');
     await page.type('input[name="password"]', password);
     await page.click('button[type="submit"]');
     await page.waitForNavigation();
+    console.log("[✔] Logged in successfully");
   } else {
     console.log("[ℹ] Already logged in or login button not found");
   }
-
-  // 글쓰기
+  
+  // 2. 로그인 상태 확인용 페이지 진입
   await page.goto('https://velog.io/write');
+  console.log("[ℹ] Navigated to write page");
+  
+  try {
+    await page.waitForSelector('.ToastEditor textarea', { timeout: 10000 });
+    console.log("[✔] Editor loaded successfully");
+  } catch (err) {
+    console.error("[❌] Editor failed to load. Possibly not logged in.");
+    await page.screenshot({ path: 'error-screenshot.png' });
+    process.exit(1);
+  }
   await page.waitForSelector('.ToastEditor textarea');
   await page.click('.ToastEditor textarea');
   await page.keyboard.type(content, { delay: 5 });
