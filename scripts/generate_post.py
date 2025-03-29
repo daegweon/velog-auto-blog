@@ -1,10 +1,9 @@
-
+from openai import OpenAI
 import os
-import openai
 from datetime import datetime
 from pytrends.request import TrendReq
 
-openai.api_key = os.getenv("CHATGPT_API_KEY")
+client = OpenAI(api_key=os.getenv("CHATGPT_API_KEY"))
 
 HIGH_PROFIT_KEYWORDS = [
     "보험", "대출", "신용카드", "건강검진", "자동차 보험",
@@ -28,7 +27,7 @@ def get_trending_keyword():
 
 def generate_title(topic):
     prompt = f"'{topic}'을 주제로 Velog 블로그 글 제목을 만들어줘. 50자 이내."
-    res = openai.ChatCompletion.create(
+    res = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
