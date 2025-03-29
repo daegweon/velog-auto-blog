@@ -129,7 +129,7 @@ def create_markdown_file(title, topic, content, image_url, tags):
         f.write(f"""---
 title: {title}
 description: A helpful blog post about {topic}
-tags: {tags}
+tags: [{', '.join(tags)}]
 date: {today}
 ---
 
