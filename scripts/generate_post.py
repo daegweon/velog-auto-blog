@@ -14,7 +14,7 @@ HIGH_PROFIT_KEYWORDS = [
 
 def get_trending_keyword():
     pytrends = TrendReq(hl='ko', tz=540)
-    df = pytrends.trending_searches(pn='south_korea')
+    df = pytrends.trending_searches(pn='korea')  # ← 이 부분 수정!
     for kw in df[0].tolist():
         if any(p in kw for p in HIGH_PROFIT_KEYWORDS):
             return kw
