@@ -25,15 +25,21 @@ const puppeteer = require('puppeteer');
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
   const page = await browser.newPage();
+  console.log("[ℹ] Navigating to Velog homepage...");
   await page.goto('https://velog.io');
 
   // 로그인
-  await page.click('a[href="/login"]');
-  await page.waitForSelector('input[name="email"]');
-  await page.type('input[name="email"]', email);
-  await page.type('input[name="password"]', password);
-  await page.click('button[type="submit"]');
-  await page.waitForNavigation();
+  const loginBtn = await page.$('a[href="/login"]');
+  if (loginBtn) {
+    await loginBtn.click();
+    await page.waitForSelector('input[name="email"]');
+    await page.type('input[name="email"]', email);
+    await page.type('input[name="password"]', password);
+    await page.click('button[type="submit"]');
+    await page.waitForNavigation();
+  } else {
+    console.log("[ℹ] Already logged in or login button not found");
+  }
 
   // 글쓰기
   await page.goto('https://velog.io/write');
