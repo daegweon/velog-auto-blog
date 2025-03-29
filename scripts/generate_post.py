@@ -14,10 +14,12 @@ HIGH_PROFIT_KEYWORDS = [
 
 def get_trending_keyword():
     pytrends = TrendReq(hl='ko', tz=540)
-    df = pytrends.trending_searches(pn='korea')  # ← 이 부분 수정!
-    for kw in df[0].tolist():
-        if any(p in kw for p in HIGH_PROFIT_KEYWORDS):
-            return kw
+    pytrends.build_payload(kw_list=["쿠팡", "건강", "자기계발", "대출"])
+    suggestions = pytrends.related_queries().get("쿠팡", {}).get("top")
+    if suggestions is not None:
+        for kw in suggestions["query"].tolist():
+            if any(p in kw for p in HIGH_PROFIT_KEYWORDS):
+                return kw
     return "2025 건강검진 꿀팁"
 
 def generate_title(topic):
