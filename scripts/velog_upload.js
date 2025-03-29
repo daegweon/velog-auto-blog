@@ -1,0 +1,55 @@
+const fs = require('fs');
+const path = require('path');
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const email = process.env.VELOG_EMAIL;
+  const password = process.env.VELOG_PASSWORD;
+
+  // 최신 마크다운 파일 선택
+  const files = fs.readdirSync('./markdown')
+    .filter(f => f.endsWith('.md'))
+    .map(f => ({ name: f, time: fs.statSync(`./markdown/${f}`).mtime }))
+    .sort((a, b) => b.time - a.time);
+
+  if (files.length === 0) {
+    console.log("[!] No markdown file found");
+    process.exit(1);
+  }
+
+  const mdFile = `./markdown/${files[0].name}`;
+  const content = fs.readFileSync(mdFile, 'utf-8');
+
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto('https://velog.io');
+
+  // 로그인
+  await page.click('a[href="/login"]');
+  await page.waitForSelector('input[name="email"]');
+  await page.type('input[name="email"]', email);
+  await page.type('input[name="password"]', password);
+  await page.click('button[type="submit"]');
+  await page.waitForNavigation();
+
+  // 글쓰기
+  await page.goto('https://velog.io/write');
+  await page.waitForSelector('.ToastEditor textarea');
+  await page.click('.ToastEditor textarea');
+  await page.keyboard.type(content, { delay: 5 });
+
+  // 제목 자동 추출
+  const firstLine = content.split('\n').find(line => line.trim().length > 5);
+  const title = firstLine.replace(/^#*/, '').trim().slice(0, 50);
+  await page.type('input[placeholder="제목을 입력하세요"]', title);
+
+  // 발행
+  await page.click('button[aria-label="출간하기"]');
+  await page.waitForSelector('button:has-text("발행하기")');
+  await page.click('button:has-text("발행하기")');
+  await page.waitForTimeout(3000);
+
+  console.log("[✔] Successfully uploaded to Velog");
+
+  await browser.close();
+})();
