@@ -46,10 +46,6 @@ def insert_affiliate_link(topic, content):
     ad = f"[{topic} 관련 추천 상품 보러가기]({link})"
     return content + f"\n\n---\n\n{ad}"
 
----
-
-{ad}"
-
 def create_markdown_file(title, topic, content, image_url):
     today = datetime.today().strftime("%Y-%m-%d")
     filename = f"markdown/{today}-{title.replace(' ', '_')}.md"
