@@ -37,7 +37,17 @@ def get_trending_keyword():
         return "Latest Technology Trends in 2025"
 
 def generate_title(topic):
-    prompt = f"Write a catchy blog post title about '{topic}' in less than 50 characters."
+    prompt = f"""
+Write a click-worthy blog post title about "{topic}" that:
+
+- Sounds human and conversational
+- Sparks curiosity or urgency
+- Includes numbers, power words, or emotion
+- Stays under 60 characters
+
+Return just the title.
+"""
+
     res = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
@@ -46,16 +56,19 @@ def generate_title(topic):
 
 def generate_content_and_tags(topic):
     prompt = f"""
-Write a detailed **Markdown** blog post about "{topic}" in English.
+Write a compelling and well-structured Markdown blog post about "{topic}" in English.
 
 Requirements:
+- Use a conversational and engaging tone (like you're talking to the reader)
 - At least 1,000 words
 - Include 3 to 5 subheadings using ## style
-- Use friendly and informative tone (not robotic)
-- Add examples and tips under each section
-- Include a short summary at the end
+- Add practical examples and tips
+- Start with a powerful hook
+- End with a brief summary and a call-to-action (e.g. "Let me know what you think!" or "Share your experience")
 
-At the end of the response, return 3 to 5 relevant SEO-friendly tags as a Python list (e.g., ["AI", "Education", "2025 Trends"]).
+Use clear formatting and make it easy to scan.
+
+At the end of the response, return 3 to 5 relevant SEO-friendly tags as a Python list (e.g., [AI, Education, 2025 Trends]).
 
 Format your response like this:
 
@@ -82,15 +95,19 @@ Format your response like this:
         return full_output, ["blog", "tech", "tips"]
 
 def generate_image(topic):
-    styles = [
-        "photorealistic",
-        "natural light",
-        "real-world situation",
-        "cinematic stock photo",
-        "lifestyle photography"
-    ]
-    style = ", ".join(styles)
-    prompt = f"A {style} of '{topic}', professional photography, no text, sharp focus"
+    prompt = f"""
+A photorealistic, high-quality thumbnail image representing "{topic}".
+
+Style:
+- Realistic lighting
+- Clear subject in focus
+- No text
+- Evoke emotion (e.g. excitement, surprise, curiosity)
+- Suitable for blog thumbnails
+
+Example: a shocked person opening a mysterious box labeled PRIME DEAL
+"""
+
     res = client.images.generate(
         prompt=prompt,
         n=1,
