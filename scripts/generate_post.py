@@ -43,21 +43,42 @@ def generate_title(topic):
     )
     return res.choices[0].message.content.strip()
 
-def generate_content(topic):
+def generate_content_and_tags(topic):
     prompt = f"""
-Write a detailed Markdown blog post about "{topic}" in English.
+Write a detailed **Markdown** blog post about "{topic}" in English.
 
+Requirements:
 - At least 1,000 words
 - Include 3 to 5 subheadings using ## style
 - Use friendly and informative tone (not robotic)
 - Add examples and tips under each section
-- Include a summary at the end
+- Include a short summary at the end
+
+At the end of the response, return 3 to 5 relevant SEO-friendly tags as a Python list (e.g., ["AI", "Education", "2025 Trends"]).
+
+Format your response like this:
+
+[CONTENT]
+<markdown content here>
+
+[TAGS]
+<python list of tags>
 """
+
     res = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}]
     )
-    return res.choices[0].message.content.strip()
+    full_output = res.choices[0].message.content.strip()
+
+    try:
+        content_part = full_output.split("[TAGS]")[0].replace("[CONTENT]", "").strip()
+        tags_part = full_output.split("[TAGS]")[1].strip()
+        tags = eval(tags_part)
+        return content_part, tags
+    except Exception as e:
+        print("[!] Failed to parse GPT output:", e)
+        return full_output, ["blog", "tech", "tips"]
 
 def generate_image(topic):
     styles = [
@@ -76,27 +97,23 @@ def generate_image(topic):
     )
     return res.data[0].url
 
-def create_markdown_file(title, topic, content, image_url):
-    today = datetime.today().strftime("%Y-%m-%d")
-    filename = f"markdown/{today}-{title.replace(' ', '_')}.md"
-    os.makedirs("markdown", exist_ok=True)
-    with open(filename, "w", encoding="utf-8") as f:
-        f.write(f"""---
+def create_markdown_file(title, topic, content, image_url, tags):
+    ...
+    f.write(f"""---
 title: {title}
 description: A helpful blog post about {topic}
-tags: [trending, guide, tips]
+tags: {tags}
 date: {today}
 ---
 
 ![Thumbnail]({image_url})
 
-{content}
+{seo_intro}{content}
 """)
-    print(f"[✔] Markdown saved: {filename}")
 
 if __name__ == "__main__":
     topic = get_trending_keyword()
     title = generate_title(topic)
-    content = generate_content(topic)
+    content, tags = generate_content_and_tags(topic)
     image_url = generate_image(topic)
-    create_markdown_file(title, topic, content, image_url)
+    create_markdown_file(title, topic, content, image_url, tags)
