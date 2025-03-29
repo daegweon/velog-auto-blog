@@ -27,13 +27,15 @@ def generate_title(topic):
 
 def generate_content(topic):
     prompt = f"""
-Write a detailed Markdown blog post about "{topic}" in English.
+Write a detailed and informative Markdown blog post about "{topic}" in English.
 
-- At least 1,000 words
-- Include 3 to 5 subheadings using ## style
-- Use friendly and informative tone (not robotic)
-- Add examples and tips under each section
-- Include a summary at the end
+Guidelines:
+- Write at least 1000 words
+- Use 3 to 5 subheadings (## format)
+- Under each subheading, include 2–3 paragraphs with helpful content
+- Use a friendly and human-like tone (not robotic)
+- Add practical tips, examples, or interesting facts where possible
+- Include a brief summary or conclusion at the end
 """
     res = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -42,17 +44,18 @@ Write a detailed Markdown blog post about "{topic}" in English.
     return res.choices[0].message.content.strip()
 
 def generate_image(topic):
+    prompt = f"A modern, clean blog thumbnail about '{topic}', in icon or illustration style, with a bright background, no text"
     res = client.images.generate(
-    prompt=f"'{topic}'에 관련된 현대적인 스타일의 블로그 썸네일, 깔끔한 아이콘 스타일, 밝은 배경, 한국어 텍스트 없이",
-    n=1,
-    size="512x512"
+        prompt=prompt,
+        n=1,
+        size="512x512"
     )
     return res.data[0].url
 
 def insert_affiliate_link(topic, content):
     partner_id = os.getenv("COUPANG_PARTNER_ID", "demo")
     link = f"https://link.coupang.com/refer?key={topic}&pid={partner_id}"
-    ad = f"[{topic} 관련 추천 상품 보러가기]({link})"
+    ad = f"[Check out recommended products related to {topic}]({link})"
     return content + f"\n\n---\n\n{ad}"
 
 def create_markdown_file(title, topic, content, image_url):
@@ -62,16 +65,16 @@ def create_markdown_file(title, topic, content, image_url):
     with open(filename, "w", encoding="utf-8") as f:
         f.write(f"""---
 title: {title}
-description: {topic}에 대한 실속 정보
-tags: [트렌드, 정보, 꿀팁]
+description: A helpful blog post about {topic}
+tags: [trending, guide, tips]
 date: {today}
 ---
 
-![썸네일]({image_url})
+![Thumbnail]({image_url})
 
 {content}
 """)
-    print(f"[✔] 마크다운 저장 완료: {filename}")
+    print(f"[✔] Markdown saved: {filename}")
 
 if __name__ == "__main__":
     topic = get_trending_keyword()
