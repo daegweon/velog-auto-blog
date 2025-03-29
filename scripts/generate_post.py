@@ -44,7 +44,7 @@ def insert_affiliate_link(topic, content):
     partner_id = os.getenv("COUPANG_PARTNER_ID", "demo")
     link = f"https://link.coupang.com/refer?key={topic}&pid={partner_id}"
     ad = f"[{topic} 관련 추천 상품 보러가기]({link})"
-    return content + f"
+    return content + f"\n\n---\n\n{ad}"
 
 ---
 
