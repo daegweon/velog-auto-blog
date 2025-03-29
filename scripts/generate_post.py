@@ -117,4 +117,4 @@ if __name__ == "__main__":
     title = generate_title(topic)
     content, tags = generate_content_and_tags(topic)
     image_url = generate_image(topic)
-    create_velog_markdown_file(title, topic, content, image_url, tags)
+    create_velog_markdown_file(title, topic, content, image_url)
