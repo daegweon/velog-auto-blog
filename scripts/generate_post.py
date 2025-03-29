@@ -7,6 +7,7 @@ from openai import OpenAI
 client = OpenAI(api_key=os.getenv("CHATGPT_API_KEY"))
 
 def get_trending_keyword():
+    import random
     api_key = os.getenv("NEWS_API_KEY")
     url = "https://newsapi.org/v2/top-headlines"
     params = {
@@ -19,7 +20,7 @@ def get_trending_keyword():
     try:
         response = requests.get(url, params=params)
         data = response.json()
-        
+
         if data.get("status") != "ok":
             raise ValueError("NewsAPI error")
 
@@ -28,7 +29,8 @@ def get_trending_keyword():
             raise ValueError("No articles found")
 
         titles = [article["title"] for article in articles if article.get("title")]
-        trending_keyword = titles[0].split(":")[0].strip()
+        title_candidates = [t.split(":")[0].strip() for t in titles if t]
+        trending_keyword = random.choice(title_candidates)
         print(f"[✔] Trending keyword from news: {trending_keyword}")
         return trending_keyword
 
